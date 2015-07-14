@@ -16,6 +16,9 @@ u="$du"
 from="$df"
 to="$dt"
 i=''
+s='no'
+yesregexp=''
+noregexp=''
 
 array_contains () { 
     local array="$2[@]"
@@ -39,6 +42,14 @@ function ign () {
       ret="excluded by not in -i"
       return 1
     fi
+    if [[ "$yesregexp" != '' && ! "$1" =~ "$yesregexp" ]]; then
+      ret="excluded by not in -y"
+      return 1
+    fi
+    if [[ "$noregexp" != '' && "$1" =~ "$noregexp" ]]; then
+      ret="excluded by in -n"
+      return 1
+    fi
     if [[ "$from" != "" && "$1" < "$from" ]]; then
       ret="excluded by < -f"
       return 1
@@ -56,7 +67,7 @@ function ign () {
 usage () {
     echo "dump mysql databases in separate files"
     echo ''
-    echo "$0 -d dir=$dd -u user="'`'"whoami"'`'" -p pass -i inc -e exc=$de -f from -t to -a args=$da -l"
+    echo "$0 -d dir=$dd -u user="'`'"whoami"'`'" -p pass -i inc -e exc=$de -y yes -n no -f from -t to -a args=$da -l -s"
     echo ''
     echo '         all arguments are optional'
     echo ''
@@ -65,8 +76,11 @@ usage () {
     echo "        -p[password]"
     echo "        -i[nclude] include databases, comma separated names"
     echo "        -e[xclude] exclude databases, comma separated names"
+    echo "        -y[es] include databases, regexp"
+    echo "        -n[no] exclude databases, regexp"
     echo "        -f[rom] start from database (inclusive)"
     echo "        -t[o] stop at database (inclusive)"
+    echo "        -s[show] only show databases"
     echo "        -a[rguments] additional mysql arguments"
     echo "        -l[ive] work with live mysql server. (don't block other connected clients. prepended '$dls' to mysql arguments -a)"
     echo ''
@@ -93,6 +107,14 @@ case $key in
     i="$2"
     shift
     ;;
+    -y|--yes)
+    yesregexp="$2"
+    shift
+    ;;
+    -n|--no)
+    noregexp="$2"
+    shift
+    ;;
     -f|--from)
     from="$2"
     shift
@@ -111,6 +133,9 @@ case $key in
     ;;
     -l|--live)
     l="$dls"
+    ;;
+    -s|--show)
+    s='yes'
     ;;
     -u|--user)
     u="$2"
@@ -163,6 +188,13 @@ done
 
 echo "Mysql dump command: mysqldump -u$u $p $l $a <database> | gzip > $d/<database>-<date>.sql.gz)"
 
+if [[ "$s" == "yes" ]]
+  then
+    echo "-s option force to show database names to dump. exiting"
+    exit
+  fi
+
+
 for I in $(mysql -u $u $p -B -e "$sqlq" -s --skip-column-names);
 do
   ign $I
@@ -178,29 +210,3 @@ done
 
 
 exit
-
-echo "Mysql dump command: mysqldump -u$u $p $l $a <database> | gzip > $d/<database>-<date>.sql.gz)"
-
-for I in $(mysql -u $u $p -B -e "$sqlq" -s --skip-column-names);
-do
-  sleep 1
-  if ( array_contains $I i ) 
-  then
-    echo "-$I (ignored by -i parameter)"
-  else
-    if [[ "$from" != "" && "$I" < "$from" ]]
-      then
-        echo "-$I (ignored by -f parameter)"
-      else
-        if [[ "$to" != "" &&  "$I" > "$to" ]]
-          then
-            echo "-$I (ignored by -t parameter)"
-          else
-    	    date=`date "+%Y_%m_%d_%H_%M_%S"`
-	    echo "+$I > $d/$I-$date.sql.gz"
-	    mysqldump -u$u $p $l $a $I | gzip > "$d/$I-$date.sql.gz"
-        fi
-      fi
-  fi
-done
-
