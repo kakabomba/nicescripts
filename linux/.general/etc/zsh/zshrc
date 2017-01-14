@@ -1,79 +1,52 @@
-# /etc/zsh/zshrc: system-wide .zshrc file for zsh(1).
-#
-# This file is sourced only for interactive shells. It
-# should contain commands to set up aliases, functions,
-# options, key bindings, etc.
-#
-# Global Order: zshenv, zprofile, zshrc, zlogin
+# Path to your oh-my-zsh configuration.
+ZSH=/etc/zsh/.oh-my-zsh
 
-READNULLCMD=${PAGER:-/usr/bin/pager}
+# Set name of the theme to load.
+# Look in ~/.oh-my-zsh/themes/
+# Optionally, if you set this to "random", it'll load a random theme each
+# time that oh-my-zsh is loaded.
+export ZSH_THEME="mh"
 
-if [[ "$TERM" != emacs ]]; then
-[[ -z "$terminfo[kdch1]" ]] || bindkey -M emacs "$terminfo[kdch1]" delete-char
-[[ -z "$terminfo[khome]" ]] || bindkey -M emacs "$terminfo[khome]" beginning-of-line
-[[ -z "$terminfo[kend]" ]] || bindkey -M emacs "$terminfo[kend]" end-of-line
-[[ -z "$terminfo[kich1]" ]] || bindkey -M emacs "$terminfo[kich1]" overwrite-mode
-[[ -z "$terminfo[kdch1]" ]] || bindkey -M vicmd "$terminfo[kdch1]" vi-delete-char
-[[ -z "$terminfo[khome]" ]] || bindkey -M vicmd "$terminfo[khome]" vi-beginning-of-line
-[[ -z "$terminfo[kend]" ]] || bindkey -M vicmd "$terminfo[kend]" vi-end-of-line
-[[ -z "$terminfo[kich1]" ]] || bindkey -M vicmd "$terminfo[kich1]" overwrite-mode
+# Set to this to use case-sensitive completion
+# CASE_SENSITIVE="true"
 
-[[ -z "$terminfo[cuu1]" ]] || bindkey -M viins "$terminfo[cuu1]" vi-up-line-or-history
-[[ -z "$terminfo[cuf1]" ]] || bindkey -M viins "$terminfo[cuf1]" vi-forward-char
-[[ -z "$terminfo[kcuu1]" ]] || bindkey -M viins "$terminfo[kcuu1]" vi-up-line-or-history
-[[ -z "$terminfo[kcud1]" ]] || bindkey -M viins "$terminfo[kcud1]" vi-down-line-or-history
-[[ -z "$terminfo[kcuf1]" ]] || bindkey -M viins "$terminfo[kcuf1]" vi-forward-char
-[[ -z "$terminfo[kcub1]" ]] || bindkey -M viins "$terminfo[kcub1]" vi-backward-char
+# Comment this out to disable weekly auto-update checks
+# DISABLE_AUTO_UPDATE="true"
 
-# ncurses fogyatekos
-[[ "$terminfo[kcuu1]" == "O"* ]] && bindkey -M viins "${terminfo[kcuu1]/O/[}" vi-up-line-or-history
-[[ "$terminfo[kcud1]" == "O"* ]] && bindkey -M viins "${terminfo[kcud1]/O/[}" vi-down-line-or-history
-[[ "$terminfo[kcuf1]" == "O"* ]] && bindkey -M viins "${terminfo[kcuf1]/O/[}" vi-forward-char
-[[ "$terminfo[kcub1]" == "O"* ]] && bindkey -M viins "${terminfo[kcub1]/O/[}" vi-backward-char
-[[ "$terminfo[khome]" == "O"* ]] && bindkey -M viins "${terminfo[khome]/O/[}" beginning-of-line
-[[ "$terminfo[kend]" == "O"* ]] && bindkey -M viins "${terminfo[kend]/O/[}" end-of-line
-[[ "$terminfo[khome]" == "O"* ]] && bindkey -M emacs "${terminfo[khome]/O/[}" beginning-of-line
-[[ "$terminfo[kend]" == "O"* ]] && bindkey -M emacs "${terminfo[kend]/O/[}" end-of-line
-fi
+# Uncomment following line if you want to disable colors in ls
+# DISABLE_LS_COLORS="true"
 
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
-			     /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+# Uncomment following line if you want to disable autosetting terminal title.
+# DISABLE_AUTO_TITLE="true"
 
-unalias run-help
-autoload run-help
+# Uncomment following line if you want disable red dots displayed while waiting for completion
+# DISABLE_COMPLETION_WAITING_DOTS="true"
 
-# If you don't want compinit called here, place the line
-# skip_global_compinit=1
-# in your $ZDOTDIR/.zshenv or $ZDOTDIR/.zprofice
-#if [[ -z "$skip_global_compinit" ]]; then
-#  autoload -U compinit
-#  compinit
-#fi
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Example format: plugins=(rails git textmate ruby lighthouse)
+plugins=(git)
 
-export GREP_OPTIONS='--color=auto'
+source $ZSH/oh-my-zsh.sh
+
+# Customize to your needs...
+
+alias grep="/bin/grep --color=auto"
+
 autoload -U compinit promptinit
 compinit
 promptinit
 
-
 alias ls="ls --color -la1h "
-setopt nohup
+alias history="fc -f -n -l 1"
+alias diff="diff --side-by-side --suppress-common-lines -W240"
+alias pp='python2 -mjson.tool'
 
-setopt APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt NOTIFY
-setopt NOHUP
-setopt MAILWARN
+function git_prompt_info() {
+ref=$(git symbolic-ref HEAD 2> /dev/null) || return
+echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$ZSH_THEME_GIT_PROMPT_SUFFIX"
+} 
 
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=5000
-SAVEHIST=5000
+if [ $UID -eq 0 ]; then NCOLOR="red"; else NCOLOR="white"; fi
 
-PROMPT=$'{%{\e[0;32m%}%n@%{\e[0;20m%}%M%{\e[1;32m%}:%{\e[0m%}%{\e[0;32m%}%~/%{\e[0m%}}%{\e[1;32m%}$%{\e[0m%}'
+PROMPT='[%{$fg[$NCOLOR]%}%B%n%b%{$reset_color%}@%{$fg[green]%}%B%m.'$(cat /etc/resolv.conf | grep domain | sed -e 's/^ *domain *//')'%b%{$reset_color%}:%{$fg[$NCOLOR]%}%30<...<%~%<<%{$reset_color%}]%(!.#.$) '
 
-if [[ "$GID" == "0" ]]; then
-PROMPT=$'{%{\e[1;31m%}%n@%{\e[1;32m%}%M%{\e[1;34m%}:%{\e[0m%}%{\e[0;31m%}%~/%{\e[0m%}}%{\e[5;31m%}#%{\e[0m%}'
-TMOUT=3600
-fi
-
-unsetopt correct_all
