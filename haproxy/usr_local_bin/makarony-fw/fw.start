@@ -1,0 +1,14 @@
+#!/bin/sh
+
+WEB=10.10.10.1
+WORKERS=10.10.11.
+LOCAL=10.10.0.0/16
+
+./rules.localnet  $WEB $LOCAL
+./rules.workers   $WEB $WORKERS
+#./rules.firewall $WEB $LOCAL
+#./rules.custom   $WEB $LOCAL
+
+
+iptables -t nat -L --line-numbers -n
+

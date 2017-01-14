@@ -1,0 +1,13 @@
+#!/usr/bin/python3
+
+import sys, re, pprint
+from subprocess import check_output
+
+
+def replaceHashByNumber(m):
+    return '{}({})'.format(m.group(1), re.sub('[\s]*$','',check_output(["git", "number", m.group(1)]).decode()))
+
+data = sys.stdin.readlines()
+d = list(map(lambda x: re.sub('([0-9a-z]{40})',replaceHashByNumber,x), data))
+print("".join(d), end='')
+

@@ -1,0 +1,1 @@
+./ntaxa-vz-for-every.sh

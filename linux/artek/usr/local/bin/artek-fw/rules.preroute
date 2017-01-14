@@ -1,0 +1,97 @@
+#!/bin/bash
+
+WEB_IP='136.243.204.62'
+NS_IP='5.9.112.53'
+MAKARONY_IP='194.44.221.181'
+
+echo 'applying preroute rules'
+
+if [[ "$1" = "help" ]]; then
+  echo "$0 [ssh | ftp | dns | masquarade]"
+  exit
+fi
+
+if [[ "$1" = "ssh" ]] || [[ "$1" = "" ]]; then
+  for i in {150..250}; do 
+      iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport "22$i" -j DNAT --to-destination "10.10.12.$i":22
+  done
+fi
+
+if [[ "$1" = "mysql" ]] || [[ "$1" = "" ]]; then
+  for i in {150..250}; do 
+      iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport "33$i" -j DNAT --to-destination "10.10.12.$i":3306
+  done
+fi
+
+if [[ "$1" = "postgres" ]] || [[ "$1" = "" ]]; then
+  for i in {150..250}; do 
+      iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport "54$i" -j DNAT --to-destination "10.10.12.$i":5432
+  done
+fi
+
+if [[ "$1" = "ftp" ]] || [[ "$1" = "" ]]; then
+  for i in {150..250}; do 
+      iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport "21$i" -j DNAT --to-destination "10.10.12.$i":21
+  done
+fi
+
+if [[ "$1" = "dns" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p udp -d $WEB_IP --dport 53 -j DNAT --to-destination 10.10.12.121:53
+  iptables -t nat -A PREROUTING -p udp -d $NS_IP --dport 53 -j DNAT --to-destination 10.10.12.121:53
+fi
+
+if [[ "$1" = "smtp" ]] || [[ "$1" = "" ]]; then
+#  iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport 25 -j DNAT --to-destination 10.10.12.122:25
+#  iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport 465 -j DNAT --to-destination 10.10.12.122:25
+#  iptables -t nat -A PREROUTING -p tcp -d $WEB_IP --dport 587 -j DNAT --to-destination 10.10.12.122:25
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP --dport 25 -j DNAT --to-destination 10.10.12.122:25
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP --dport 465 -j DNAT --to-destination 10.10.12.122:25
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP --dport 587 -j DNAT --to-destination 10.10.12.122:25
+fi
+
+if [[ "$1" = "pop3" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP --dport 110 -j DNAT --to-destination 10.10.12.122:110
+fi
+
+if [[ "$1" = "pop3s" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP --dport 995 -j DNAT --to-destination 10.10.12.122:995
+fi
+
+if [[ "$1" = "imap" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP  --dport 143 -j DNAT --to-destination 10.10.12.122:143
+fi
+
+if [[ "$1" = "imaps" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP  --dport 993 -j DNAT --to-destination 10.10.12.122:993
+fi
+
+if [[ "$1" = "src" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP  --dport 22 -j DNAT --to-destination 10.10.12.132:22
+fi
+
+if [[ "$1" = "ntop" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $WEB_IP  --dport 3333 -j DNAT --to-destination 127.0.0.1:3000
+fi
+
+if [[ "$1" = "ldap" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP  --dport 389 -s $MAKARONY_IP -j DNAT --to-destination 10.10.12.130:389
+  iptables -t nat -A PREROUTING -p udp -d $NS_IP  --dport 389 -s $MAKARONY_IP -j DNAT --to-destination 10.10.12.130:389
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP  --dport 389 -s $WEB_IP -j DNAT --to-destination 10.10.12.130:389
+  iptables -t nat -A PREROUTING -p udp -d $NS_IP  --dport 389 -s $WEB_IP -j DNAT --to-destination 10.10.12.130:389
+  iptables -t nat -A PREROUTING -p tcp -d $NS_IP  --dport 389 -s $NS_IP -j DNAT --to-destination 10.10.12.130:389
+  iptables -t nat -A PREROUTING -p udp -d $NS_IP  --dport 389 -s $NS_IP -j DNAT --to-destination 10.10.12.130:389
+fi
+
+if [[ "$1" = "masquarade" ]] || [[ "$1" = "" ]]; then
+echo 'm'
+# iptables -t nat -s 10.10.12.0/24 -d 10.10.12.0/24 -A POSTROUTING -j MASQUERADE
+  iptables -t nat -s 10.10.12.0/24 -A POSTROUTING -j MASQUERADE
+fi
+
+if [[ "$1" = "temp_profi_postgres" ]] || [[ "$1" = "" ]]; then
+  iptables -t nat -A PREROUTING -p tcp -d $WEB_IP  --dport 54321 -j DNAT --to-destination 10.10.12.182:5432
+  iptables -t nat -A PREROUTING -p tcp -d $WEB_IP  --dport 54111 -j DNAT --to-destination 10.10.12.111:5432
+fi
+
+iptables -t nat -L
+

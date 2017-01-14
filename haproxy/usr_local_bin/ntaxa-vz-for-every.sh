@@ -1,0 +1,1 @@
+../../linux/usr/local/bin/ntaxa-vz-for-every.sh

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+WEB=10.10.10.1
+WORKERS=10.10.11.
+LOCAL=10.10.0.0/16
+
+/etc/ntaxa-fw/rules.localnet  $WEB $LOCAL
+/etc/ntaxa-fw/rules.workers   $WEB $WORKERS
+#./rules.firewall $WEB $LOCAL
+#./rules.custom   $WEB $LOCAL
+
+iptables -t nat -L --line-numbers -n
+

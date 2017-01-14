@@ -1,0 +1,8 @@
+#!/bin/sh
+
+WEB_IP=10.10.10.1
+WORKERS_NET=10.10.12
+LOCAL_NET=10.10.11.
+
+./rules.firewall
+./rules.preroute

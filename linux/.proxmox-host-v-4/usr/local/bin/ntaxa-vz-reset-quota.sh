@@ -1,0 +1,1 @@
+../../linux/usr/local/bin/ntaxa-vz-reset-quota.sh
