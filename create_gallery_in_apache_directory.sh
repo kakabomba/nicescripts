@@ -100,4 +100,4 @@ for i in *.gif *.GIF *.JPG *.jpg *.JPEG *.jpeg
   echo "Prcoessing image $i ..."
   /usr/bin/convert -resize $sx$s $i $d/$i
 done
-151.101.112.133
+
