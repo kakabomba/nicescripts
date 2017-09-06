@@ -4,6 +4,7 @@
 
 # example (how to use without download)
 # curl https://raw.githubusercontent.com/kakabomba/nicescripts/master/create_gallery_in_apache_directory.sh | bash /dev/stdin -s 100 -a
+# you need imagemagick to create thumbnails (apt-get update; apt-get install imagemagick)
 
 usage() { echo "Usage: $0 [-s <int=200>] [-d <string=.gallery>] [-a]
   -s for thumbnail size (default 200)
