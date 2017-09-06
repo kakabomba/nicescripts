@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# example (how to use without download)
+# curl https://raw.githubusercontent.com/kakabomba/nicescripts/master/linux/.general/usr/local/bin/create_gallery_in_apache_directory.sh | bash /dev/stdin -s 100 -a
+
 usage() { echo "Usage: $0 [-s <int=200>] [-d <string=.gallery>] [-a]
   -s for thumbnail size (default 200)
   -d for directory of thumbnails (and optionaly archive file) (default .gallery)
