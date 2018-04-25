@@ -1,0 +1,338 @@
+// stupid sass cant include another sass file from url (less can!).
+// so you have to include
+// OR remote css
+// @import url('https://raw.githubusercontent.com/kakabomba/nicescripts/master/some.css');
+// OR local scss (after curling it)
+// @import 'some.scss';
+
+.error {
+  color: #f00;
+}
+
+.warning {
+  color: #F7C223;
+}
+
+.notice {
+  color: #2ecc40;
+}
+
+.ok {
+  color: #2ecc40;
+}
+
+.red {
+  color: #f00 !important;
+}
+
+.green {
+  color: #2ecc40 !important;
+}
+
+.yellow {
+  color: #F7C223 !important;
+}
+
+.blue {
+  color: #0000ff !important;
+}
+
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oh {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oa {
+  overflow: auto;
+}
+
+$sizes_percents: 1 5 10 15 20 25 50 75 100;
+$sizes_em: 0.1 0.2 0.5 1 1.5 2 3 4 5 7 10 15 20 25 50 100;
+$sizes_px: 1 2 5 10 20 50 100 200 1000;
+
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+  @return $string;
+}
+
+@each $size in $sizes_percents {
+  $s: percentage($size/100);
+  .w#{$size} {
+    width: $s !important;
+  }
+  .h#{$size} {
+    height: $s !important;
+  }
+}
+
+@each $size in $sizes_em {
+  $s: str-replace(#{$size}, '.', '');
+  .w#{$s}em {
+    width: #{$size}em !important;
+  }
+  .h#{$s}em {
+    height: #{$size}em !important;
+  }
+}
+
+@each $size in $sizes_px {
+  .w#{$size}px {
+    width: #{$size}px !important;
+  }
+  .h#{$size}px {
+    height: #{$size}px !important;
+  }
+}
+
+$sides: top right bottom left;
+$margins_em: 0.1 0.2 0.5 1 1.5 2 3 4 5 10;
+$margins_px: 1 2 5 10;
+
+.m0 {
+  margin: 0 !important;
+}
+
+.p0 {
+  paddin: 0 !important;
+}
+
+@each $side in $sides {
+  $s: str-slice($side, 1, 1);
+
+  .pa#{$s} {
+      position: absolute !important;
+      #{$side}: 0  !important;
+    }
+
+  .m#{$s}0 {
+    margin-#{$side}: 0 !important;
+  }
+
+  .p#{$s}0 {
+    paddin-#{$side}: 0 !important;
+  }
+}
+
+@each $margin in $margins_em {
+  $m: str-replace(#{$margin}, '.', '');
+
+  .m#{$m}em {
+    margin: #{$margin}em !important;
+  }
+
+  .p#{$m}em {
+    paddin: #{$margin}em !important;
+  }
+
+  @each $side in $sides {
+    $s: str-slice($side, 1, 1);
+
+    .m#{$s}#{$m}em {
+      margin-#{$side}: #{$margin}em !important;
+    }
+
+    .p#{$s}#{$m}em {
+      paddin-#{$side}: #{$margin}em !important;
+    }
+  }
+}
+
+@each $margin in $margins_px {
+  $m: str-replace(#{$margin}, '.', '');
+
+  .m#{$m}px {
+    margin: #{$margin}px !important;
+  }
+
+  .p#{$m}px {
+    paddin: #{$margin}px !important;
+  }
+
+  @each $side in $sides {
+    $s: str-slice($side, 1, 1);
+
+    .m#{$s}#{$m}px {
+      margin-#{$side}: #{$margin}px !important;
+    }
+
+    .p#{$s}#{$m}px {
+      paddin-#{$side}: #{$margin}px !important;
+    }
+  }
+}
+
+
+.db {
+  display: block;
+}
+
+.di {
+  display: inline;
+}
+
+.dib {
+  display: inline-block;
+}
+
+.pa {
+  position: absolute;
+}
+
+.pr {
+  position: relative;
+}
+
+.vab {
+  vertical-align: bottom;
+}
+
+.vat {
+  vertical-align: top;
+}
+
+.vabl {
+  vertical-align: baseline;
+}
+
+.vam {
+  vertical-align: middle;
+}
+
+.fr {
+  float: right;
+}
+
+.fl {
+  float: left;
+}
+
+.bg-contain {
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.bg-cover {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.tal {
+  text-align: left;
+}
+
+.tar {
+  text-align: right;
+}
+
+.tac {
+  text-align: center;
+}
+
+.taj {
+  text-align: justify;
+}
+
+
+.dn {
+  display: none !important;
+}
+
+.bold {
+  font-weight: bold !important;
+}
+
+.italic {
+  font-style: italic !important;
+}
+
+.small {
+  font-size: small !important;
+}
+
+.big {
+  font-size: large !important;
+}
+
+.link {
+  cursor: pointer;
+  cursor: hand;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Chrome/Safari/Opera */
+  -khtml-user-select: none; /* Konqueror */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                         not supported by any browser */
+}
+
+.disabled, input[disabled][type=button], input[disabled][type=submit], button[disabled] {
+  -khtml-opacity: .25;
+  -moz-opacity: .25;
+  filter: alpha(opacity=25);
+  filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.25);
+  opacity: .25;
+  pointer-events: none !important;
+}
+
+.dimmed {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  opacity: 0.6;
+  z-index: 1001;
+  width: 100%;
+  height: 100%;
+  display: none;
+  padding: 0;
+  margin: 0;
+
+  &.fixed {
+    position: fixed;
+  }
+
+  .dimmed-message {
+    top: 50%;
+    left: 50%;
+    font-size: 24px;
+    color: black;
+    opacity: 1;
+    z-index: 1002;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    img {
+      background-image: url('https://raw.githubusercontent.com/kakabomba/nicescripts/master/loader.gif');
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 120px;
+      height: 104px;
+    }
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: calc(100% - 150px);
+      margin-left: 50px;
+      transform: translate(-50%, -50%);
+    }
+  }
+
+}
